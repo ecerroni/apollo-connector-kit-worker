@@ -1,0 +1,33 @@
+{
+  "name": "test-wrangler",
+  "private": true,
+  "description": "🔥Lightning-fast, globally distributed Apollo GraphQL server, deployed at the edge using Cloudflare Workers",
+  "version": "1.1.0",
+  "author": "Enrico Cerroni <e.cerroni@gmail.com>",
+  "scripts": {
+    "start": "cloudworker -r dist/main.js",
+    "build": "wrangler build"
+  },
+  "dependencies": {
+    "@okgrow/graphql-scalars": "^0.4.6",
+    "@snoculars/faunadb": "^2.10.1",
+    "apollo-datasource-rest": "^0.3.2",
+    "apollo-server-cloudflare": "^2.4.8",
+    "bcryptjs": "^2.4.3",
+    "graphql": "^14.2.1",
+    "graphql-extensions": "^0.10.7",
+    "graphql-fields": "^2.0.3",
+    "graphql-input-number": "^0.0.10",
+    "graphql-input-string": "^0.0.16",
+    "graphql-middleware": "^4.0.2",
+    "graphql-request": "^1.8.2",
+    "graphql-type-json": "^0.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "merge-graphql-schemas": "^1.7.3"
+  },
+  "license": "MIT",
+  "main": "src/index.js",
+  "devDependencies": {
+    "web-streams-polyfill": "^2.0.6"
+  }
+}
