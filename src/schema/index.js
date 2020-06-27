@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server-cloudflare')
-const { makeExecutableSchema } = require('graphql-tools')
+const { makeExecutableSchema,  makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools')
 const { mergeTypes } = require('merge-graphql-schemas');
 const OKGGraphQLScalars = require('@okgrow/graphql-scalars'); // eslint-disable-line
 const {
@@ -99,27 +99,49 @@ const isAllowed = async (resolve, root, args, context, info) => {
   return result
 }
 
-const schema = applyMiddleware(
-  makeExecutableSchema({
-    typeDefs,
-    resolvers: [resolvers, { JSON: GraphQLJSON }],
-  }),
-  isAllowed,
-)
-
-Object.keys(OKGGraphQLScalars).forEach(key => {
-  // eslint-disable-next-line no-underscore-dangle
-  if (schema._typeMap[key]) {
-    Object.assign(schema._typeMap[key], OKGGraphQLScalars[key]); // eslint-disable-line no-underscore-dangle
-  }
-});
-Object.keys(TYPE_CONSTRAINTS).forEach(k => {
-  // eslint-disable-next-line no-underscore-dangle
-  const key = TYPE_CONSTRAINTS[k];
-  if (schema._typeMap[key]) {
-    Object.assign(schema._typeMap[key], TYPE_CONSTRAINTS[k]); // eslint-disable-line no-underscore-dangle
-  }
-});
-
-attachDirectives(schema);
-module.exports = schema
+const e = async () => {
+  console.log(0);
+  let res = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+  console.log(1);
+  res = res.json()
+  console.log(2);
+  console.log(res)
+}
+  // const introspectionResult = await introspectSchema(
+  //   new HttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
+  //     Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
+  //   } })
+  // );
+  // console.log(1);
+  // const remoteSchema = await makeRemoteExecutableSchema({
+  //   schema: introspectionResult,
+  //   link: new HttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
+  //     Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
+  //   } })
+  // });
+  // console.log(2);
+  // console.log('rs', remoteSchema);
+  const schema = applyMiddleware(
+    makeExecutableSchema({
+      typeDefs,
+      resolvers: [resolvers, { JSON: GraphQLJSON }],
+    }),
+    isAllowed,
+  )
+  
+  Object.keys(OKGGraphQLScalars).forEach(key => {
+    // eslint-disable-next-line no-underscore-dangle
+    if (schema._typeMap[key]) {
+      Object.assign(schema._typeMap[key], OKGGraphQLScalars[key]); // eslint-disable-line no-underscore-dangle
+    }
+  });
+  Object.keys(TYPE_CONSTRAINTS).forEach(k => {
+    // eslint-disable-next-line no-underscore-dangle
+    const key = TYPE_CONSTRAINTS[k];
+    if (schema._typeMap[key]) {
+      Object.assign(schema._typeMap[key], TYPE_CONSTRAINTS[k]); // eslint-disable-line no-underscore-dangle
+    }
+  });
+  
+  attachDirectives(schema);
+  module.exports = schema

@@ -12,6 +12,7 @@
     "@okgrow/graphql-scalars": "^0.4.6",
     "@snoculars/faunadb": "^2.10.1",
     "apollo-datasource-rest": "^0.3.2",
+    "apollo-link-http": "^1.5.17",
     "apollo-server-cloudflare": "^2.4.8",
     "bcryptjs": "^2.4.3",
     "graphql": "^14.2.1",

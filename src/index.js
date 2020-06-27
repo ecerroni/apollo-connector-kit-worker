@@ -1,5 +1,5 @@
-const apollo = require('./handlers/apollo')
-const playground = require('./handlers/playground')
+const server = require('./server')
+const playground = require('./playground')
 const setCors = require('./utils/setCors')
 
 const graphQLOptions = {
@@ -31,7 +31,7 @@ const graphQLOptions = {
   // Note that you'll need to add a KV namespace called
   // WORKERS_GRAPHQL_CACHE in your wrangler.toml file for this to
   // work! See the project README for more information.
-  kvCache: true,
+  kvCache: false,
 }
 
 const handleRequest = async request => {
@@ -46,7 +46,7 @@ const handleRequest = async request => {
       const response =
         request.method === 'OPTIONS'
           ? new Response('', { status: 204 })
-          : await apollo(request, graphQLOptions, __DEV)
+          : await server(request, graphQLOptions, __DEV)
       if (graphQLOptions.cors) {
         setCors(response, graphQLOptions.cors)
       }

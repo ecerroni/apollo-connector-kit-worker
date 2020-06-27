@@ -1,6 +1,23 @@
-import { User as UserModel } from './_model';
-import UserSchema from './_schema';
 
-export const User = db => new UserModel({ User: db.model('User', UserSchema) });
-export { UserHelper } from './_model';
-export { UserEnums } from './_enums'
+const client = require('../../../dataconnectors')
+
+const { fql, q, graphql } = client
+
+class Class {
+  async getAll() {
+
+    const fetch = `{
+      allUsers {
+        _id
+        value
+        rank
+        permissions
+      }
+    }`
+    const { allUsers: { data = [] } = {} } = await graphql.request(fetch)
+    return data
+
+  }
+}
+
+module.exports = Class

@@ -1,7 +1,23 @@
-import RoleModel from './_model';
-import RoleSchema from './_schema';
+const client = require('../../../dataconnectors')
 
-export const Role = db =>
-  new RoleModel({
-    Role: db.model('Role', RoleSchema)
-  });
+
+const { fql, q, graphql } = client
+
+class Class {
+  async getAll() {
+
+    const fetch = `{
+      allRoles {
+        _id
+        value
+        rank
+        permissions
+      }
+    }`
+    const { allRoles: { data = [] } = {} } = await graphql.request(fetch)
+    return data
+
+  }
+}
+
+module.exports = Class

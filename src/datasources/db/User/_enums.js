@@ -1,1 +1,0 @@
-export const UserEnums = ['user', 'entrepreneur', 'admin']
