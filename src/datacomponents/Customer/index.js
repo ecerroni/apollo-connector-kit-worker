@@ -15,34 +15,17 @@ const transformFields = o =>
 
 const Customer = {
   types: `
-
-  type Address {
-    street: String!
-    city: String!
-    state: String!
-    zipCode: String!
-  }
-
-  type Customer {
-    _id: ID!
-    lastName: String!
-    firstName: String!
-    creditCard: JSON!
-    address: Address!
-    telephone: String!
-  }
-
   type Query {
-    allCustomers: [Customer]
-    allCustomers2: [Customer]
+    allCustomersLocal: [String]
+    allCustomersLocal2: [String]
   }
 `,
   resolvers: {
     Query: {
-      allCustomers2: (_, __, { dataSources }) => {
+      allCustomersLocal2: (_, __, { dataSources }) => {
         return dataSources.Customer.getAllFQL()
       },
-      allCustomers: (_, __, { dataSources }, info) => {
+      allCustomersLocal: (_, __, { dataSources }, info) => {
         return dataSources.Customer.getAll({
           query: 'allCustomers',
           fields: transformFields(graphqlFields(info))

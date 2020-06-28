@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server-cloudflare')
-const { makeExecutableSchema,  makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools')
+const {  makeExecutableSchema, makeRemoteExecutableSchema, mergeSchemas } = require('graphql-tools')
 const { mergeTypes } = require('merge-graphql-schemas');
 const OKGGraphQLScalars = require('@okgrow/graphql-scalars'); // eslint-disable-line
 const {
@@ -13,8 +13,6 @@ const { attachDirectives } = require('../directives/_attach-schema')
 const { directives } = require('../directives/_directives')
 const { UNAUTHORIZED } = require('../environment/_authorization')
 const { isPrivateOperation } = require('../utils')
-const loginMutation = require('../resolvers/User/mutations/_login')
-const checkAuthQuery = require('../resolvers/User/queries/_checkAuth')
 const { roles } = require('../directives/_constraints')
 const components = require('../datacomponents')
 
@@ -43,49 +41,31 @@ const CONSTRAINT_SCALARS = TYPE_CONSTRAINTS.reduce(
   ''
 );
 
-/* TYPES AND RESOLVERS ******************/
-
-const types = gql`
-  input userCredentials {
-    username: String!
-    password: String!
-  }
-  type Query {
-    _protected: String
-    onlyOwnerRole: String @${roles.is.owner}
-    _checkAuth: String
-    connection: String
-  }
-  type Mutation {
-    login(input: userCredentials!): String
-  }
-`;
 
 const resolvers = {
-  Query: {
-    connection: () => 'Server is up and running',
-    _protected: (parent, args, context) => {
-      return "Hello, Logged in user!";
-    },
-    onlyOwnerRole: (parent, args, context) => {
-      return "Hello, Owner!";
-    },
-    _checkAuth: checkAuthQuery,
-    ...components.resolvers.Query
-  },
-  Mutation: {
-    login: loginMutation,
-    ...components.resolvers.Mutation
-  }
+  // Query: {
+  //   // connection: () => 'Server is up and running',
+  //   // _protected: (parent, args, context) => {
+  //   //   return "Hello, Logged in user!";
+  //   // },
+  //   // onlyOwnerRole: (parent, args, context) => {
+  //   //   return "Hello, Owner!";
+  //   // },
+  //   // _checkAuth: checkAuthQuery,
+  //   // ...components.resolvers.Query
+  // },
+  // Mutation: {
+  //   // login: loginMutation,
+  //   // ...components.resolvers.Mutation
+  // }
 };
 /* ******************/
 const typeDefs = mergeTypes([
   directives,
-  oKGGraphQLScalars,
-  CONSTRAINT_SCALARS,
-  types,
+  // oKGGraphQLScalars,
+  // CONSTRAINT_SCALARS,
   components.types,
-  `scalar JSON` // due to GraphQLJSON | 'graphql-type-json';
+  // `scalar JSON` // due to GraphQLJSON | 'graphql-type-json';
 ]);
 
 const isAllowed = async (resolve, root, args, context, info) => {
@@ -99,14 +79,6 @@ const isAllowed = async (resolve, root, args, context, info) => {
   return result
 }
 
-const e = async () => {
-  console.log(0);
-  let res = await fetch('https://jsonplaceholder.typicode.com/todos/1')
-  console.log(1);
-  res = res.json()
-  console.log(2);
-  console.log(res)
-}
   // const introspectionResult = await introspectSchema(
   //   new HttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
   //     Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
@@ -121,27 +93,124 @@ const e = async () => {
   // });
   // console.log(2);
   // console.log('rs', remoteSchema);
-  const schema = applyMiddleware(
-    makeExecutableSchema({
+  const fetch = require("node-fetch");
+  const { __schema } = require('../remote-schema.json')
+  const { printSchema, buildClientSchema } = require('graphql/utilities');
+
+  const { lazy } = require( 'apollo-link-lazy');
+  const { createHttpLink } = require('apollo-link-http');
+  const remote = buildClientSchema({ __schema })
+  const remoteSchema = makeRemoteExecutableSchema({
+    schema: remote,
+    link: createHttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
+        Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
+      }, fetch: fetch.default })
+  });
+  console.log('remoteSchema');
+  console.log(remoteSchema);
+  // // write a resolver to write custom logic
+  const customResolvers = {
+    Query: {
+      ...components.resolvers.Query,
+      // user_average_age: async (root, args, context, info) => {
+      //   return true
+      // },
+      allCustomers: async (root, args, context, info) => {
+        console.log(context.user, roles.is.user);
+        if (true) throw new Error(UNAUTHORIZED)
+        return info.mergeInfo.delegateToSchema({
+          schema: remoteSchema,
+          operation: 'query',
+          fieldName: 'allCustomers',
+          args,
+          context,
+          info
+        });
+      },
+      // game: (root, args, context, info) => {
+      //   customLogic(root, args, context, info);
+      //   return info.mergeInfo.delegateToSchema({
+      //     schema,
+      //     operation: 'query',
+      //     fieldName: 'game',
+      //     args,
+      //     context,
+      //     info
+      //   });
+      // }
+    },
+    Mutation: {
+      ...components.resolvers.Mutation
+    }
+  };
+  // const localSchema = makeExecutableSchema({
+  //   typeDefs,
+  //   resolvers: [resolvers, { JSON: GraphQLJSON }],
+  // })
+  // console.log('local schema');
+  // console.log(localSchema);
+
+  
+  // Object.keys(OKGGraphQLScalars).forEach(key => {
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   if (localSchema._typeMap[key]) {
+  //     Object.assign(localSchema._typeMap[key], OKGGraphQLScalars[key]); // eslint-disable-line no-underscore-dangle
+  //   }
+  // });
+  // Object.keys(TYPE_CONSTRAINTS).forEach(k => {
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   const key = TYPE_CONSTRAINTS[k];
+  //   if (localSchema._typeMap[key]) {
+  //     Object.assign(localSchema._typeMap[key], TYPE_CONSTRAINTS[k]); // eslint-disable-line no-underscore-dangle
+  //   }
+  // });
+  
+  // attachDirectives(localSchema);
+  const typeDefs2 = `
+  type Query {
+    user_average_age: Boolean
+  }
+`;
+
+// Resolvers for user_average_age query
+const resolvers2 = {
+  Query: {
+    user_average_age: async (root, args, context, info) => {
+      return true
+    },
+      // allCustomers: async (root, args, context, info) => {
+      //   return info.mergeInfo.delegateToSchema({
+      //     schema: remoteSchema,
+      //     operation: 'query',
+      //     fieldName: 'allCustomers',
+      //     args,
+      //     context,
+      //     info
+      //   });
+      // },
+  }
+};
+
+  // const localSchema = makeExecutableSchema({
+  //   typeDefs: typeDefs2,
+  //   resolvers: resolvers2
+  // });
+  // console.log(localSchema);
+
+  
+  const finalSchema = mergeSchemas({
+    schemas: [
+      remoteSchema,
       typeDefs,
-      resolvers: [resolvers, { JSON: GraphQLJSON }],
-    }),
+      // localSchema,
+    ],
+    resolvers: customResolvers
+  })
+  console.log('finalSchema');
+  console.log(finalSchema);
+  // attachDirectives(finalSchema);
+  const schema = applyMiddleware(
+    finalSchema,
     isAllowed,
   )
-  
-  Object.keys(OKGGraphQLScalars).forEach(key => {
-    // eslint-disable-next-line no-underscore-dangle
-    if (schema._typeMap[key]) {
-      Object.assign(schema._typeMap[key], OKGGraphQLScalars[key]); // eslint-disable-line no-underscore-dangle
-    }
-  });
-  Object.keys(TYPE_CONSTRAINTS).forEach(k => {
-    // eslint-disable-next-line no-underscore-dangle
-    const key = TYPE_CONSTRAINTS[k];
-    if (schema._typeMap[key]) {
-      Object.assign(schema._typeMap[key], TYPE_CONSTRAINTS[k]); // eslint-disable-line no-underscore-dangle
-    }
-  });
-  
-  attachDirectives(schema);
   module.exports = schema

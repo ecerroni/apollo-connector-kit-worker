@@ -38,7 +38,7 @@ const handleRequest = async request => {
   const headers = new Map(request.headers)
   const host = headers.get('host')
   let __DEV;
-  if (host === 'localhost:3000') __DEV = true
+  if (host === 'localhost:8787') __DEV = true
 
   const url = new URL(request.url)
   try {
@@ -62,6 +62,7 @@ const handleRequest = async request => {
       return new Response('Not found', { status: 404 })
     }
   } catch (err) {
+    console.log(err);
     if (__DEV) {
       console.log(err);
     }
