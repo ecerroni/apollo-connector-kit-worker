@@ -1,0 +1,27 @@
+{
+  "queries": [
+    "findProductByID",
+    "findOrderByID",
+    "allCustomers",
+    "allProducts",
+    "findStorehouseByID",
+    "allStorehouses",
+    "allOrders",
+    "findCustomerByID"
+  ],
+  "mutations": [
+    "createOrder",
+    "deleteOrder",
+    "updateOrder",
+    "updateCustomer",
+    "createStorehouse",
+    "submitOrder",
+    "deleteCustomer",
+    "updateStorehouse",
+    "createProduct",
+    "deleteStorehouse",
+    "updateProduct",
+    "createCustomer",
+    "deleteProduct"
+  ]
+}

@@ -37,9 +37,14 @@ const graphQLOptions = {
 const handleRequest = async request => {
   const headers = new Map(request.headers)
   const host = headers.get('host')
+  console.log('[INFO] Host is:', host)
   let __DEV;
-  if (host === 'localhost:8787') __DEV = true
-
+  if (host.includes('8787') || host.includes('example.com')) __DEV = true
+  console.log(`[INFO] Running as [${__DEV ? 'Development' : 'Production'}]`)
+  if (__DEV) {
+    graphQLOptions.debug = true
+    graphQLOptions.kvCache = true //TODO: RICO: use the KV cache in production too?
+  }
   const url = new URL(request.url)
   try {
     if (url.pathname === graphQLOptions.baseEndpoint) {
@@ -62,7 +67,6 @@ const handleRequest = async request => {
       return new Response('Not found', { status: 404 })
     }
   } catch (err) {
-    console.log(err);
     if (__DEV) {
       console.log(err);
     }

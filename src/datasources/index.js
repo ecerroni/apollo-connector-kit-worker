@@ -1,11 +1,11 @@
 const dbSource = require('./db');
-// import { apiSource } from './api';
+const apiSource = require('./api');
 
 // export { UserHelper } from './db';
 console.log('dbSource', dbSource);
 const buildSource = {
   db: () => dbSource(),
-  // api: () => apiSource()
+  api: () => apiSource()
 };
 
 module.exports = buildSource

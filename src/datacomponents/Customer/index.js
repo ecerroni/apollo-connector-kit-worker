@@ -1,4 +1,5 @@
 const graphqlFields = require('graphql-fields');
+const { roles } = require('../../directives/_constraints');
 
 const transformFields = o =>
   Object.entries(o).reduce(
@@ -15,21 +16,26 @@ const transformFields = o =>
 
 const Customer = {
   types: `
+  type Pokemon {
+    id: Int
+    name: String
+  }
   type Query {
-    allCustomersLocal: [String]
+    allCustomersLocal: Pokemon @${roles.is.user}
     allCustomersLocal2: [String]
+  }
+  type Mutation {
+    test: String
   }
 `,
   resolvers: {
     Query: {
       allCustomersLocal2: (_, __, { dataSources }) => {
-        return dataSources.Customer.getAllFQL()
+        return ['test']
       },
-      allCustomersLocal: (_, __, { dataSources }, info) => {
-        return dataSources.Customer.getAll({
-          query: 'allCustomers',
-          fields: transformFields(graphqlFields(info))
-        })
+      allCustomersLocal: async (_, __, { dataSources: { PokemonApi } = {} }, info) => {
+        const pok = PokemonApi ? await PokemonApi.getPokemon(1) : null
+        return pok;
       }
     }
   }

@@ -11,10 +11,7 @@ const formatError = require('./graphql/_format-error')
 const formatResponse = require('./graphql/_format-response')
 
 const KVCache = require('./kv-cache')
-// const PokemonAPI = require('../datasources/pokeapi')
-// const resolvers = require('../resolvers')
-// const typeDefs = require('../schema')
-// const schema = require('./schema/index')
+// const PokemonAPI = require('./datasources/pokeapi')
 
 class FwdHeadersExtension extends GraphQLExtension {
   willSendResponse(o) {
@@ -33,9 +30,9 @@ class FwdHeadersExtension extends GraphQLExtension {
   }
 }
 
-const dataSources = () => ({
-  // pokemonAPI: new PokemonAPI(),
-})
+// const dataSources = () => ({
+//   pokemonAPI: new PokemonAPI(),
+// })
 
 
 const createServer = (graphQLOptions, isDev) => {
@@ -57,7 +54,7 @@ const createServer = (graphQLOptions, isDev) => {
     // dataSources,
     dataSources: () => ({
       ...buildSource.db(),
-      // ...buildSource.api(),
+      ...buildSource.api(),
     }),
     ...(graphQLOptions.kvCache
       ? { cache: new KVCache(isDev) }

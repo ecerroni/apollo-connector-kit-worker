@@ -11,6 +11,10 @@
 //   }
 // }
 
-export const apiSource = () => ({
-  // Posts: new Posts(),
+
+const PokemonApi = require('./_pokeapi')
+const apiSource = () => ({
+  PokemonApi: new PokemonApi(),
 })
+
+module.exports = apiSource
