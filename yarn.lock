@@ -604,16 +604,16 @@ apollo-server-caching@^0.5.1:
   dependencies:
     lru-cache "^5.0.0"
 
-apollo-server-cloudflare@^2.15.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-cloudflare/-/apollo-server-cloudflare-2.15.0.tgz#602a24fc033f7d579ced22e303986897a45287e5"
-  integrity sha512-+W/DBha0H0jjilmPhCD8hyaMc9/5m7cpYZ2lhHvW1Ci8liutfxlgK2+H6KIYhc5xsvnPigr1YvTWPcthD2mEHQ==
+apollo-server-cloudflare@^2.14.2:
+  version "2.14.2"
+  resolved "https://registry.yarnpkg.com/apollo-server-cloudflare/-/apollo-server-cloudflare-2.14.2.tgz#1abb5920c8a55df5e770db4cfdc422d6e21fab61"
+  integrity sha512-2iWm0r65sMujdiFI/cldBJoOE+J5rHoKC+dt4y1o6fNL7Hyxgc6SggG6c0/Tka2jwP2ilm75YneH3l0jaJtvUw==
   dependencies:
-    apollo-server-core "^2.15.0"
+    apollo-server-core "^2.14.2"
     apollo-server-env "^2.4.4"
     apollo-server-types "^0.5.0"
 
-apollo-server-core@^2.15.0:
+apollo-server-core@^2.14.2:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-2.15.0.tgz#a9c19028b76e7ca90a759b4421556ba7625df1d9"
   integrity sha512-PwNm/G5IXReev7E0ZaRAekQ7pN9BTuXH8c2QVgfMGMno3XiN5Dj+1DXYQthpwNJch0y5zhhLcb/JbClijgSEsA==

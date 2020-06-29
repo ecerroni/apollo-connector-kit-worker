@@ -13,7 +13,7 @@
     "@snoculars/faunadb": "^2.10.1",
     "apollo-datasource-rest": "^0.3.2",
     "apollo-link-http": "^1.5.17",
-    "apollo-server-cloudflare": "^2.15.0",
+    "apollo-server-cloudflare": "^2.14.2",
     "bcryptjs": "^2.4.3",
     "graphql": "^14.2.1",
     "graphql-extensions": "^0.10.7",
