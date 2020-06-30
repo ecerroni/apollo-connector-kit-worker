@@ -1,1 +1,0 @@
-module.exports = (_, __, { user }) => `Authorized | CurentUserId ${user.id}!`

@@ -38,7 +38,7 @@ class FwdHeadersExtension extends GraphQLExtension {
 const createServer = (graphQLOptions, isDev) => {
   return new ApolloServer({
     schema,
-    context: ({ request }) => {
+    context: ({request }) => {
       const rawHeaders = new Map(request.headers)
       const headers = {};
 
@@ -48,9 +48,9 @@ const createServer = (graphQLOptions, isDev) => {
       return buildContext(headers)
     },
     extensions: [() => new FwdHeadersExtension()],
-    formatError: err => formatError(err),
-    formatResponse: (response, query) => formatResponse({ response, query }),
-    introspection: true,
+    formatError: err => formatError(err, isDev),
+    // formatResponse: (response, query) => formatResponse({ response, query }), // now handled by ./graphql/format-response-cloudlfare.js
+    introspection: isDev,
     // dataSources,
     dataSources: () => ({
       ...buildSource.db(),

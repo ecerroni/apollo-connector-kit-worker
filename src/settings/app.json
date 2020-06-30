@@ -5,7 +5,7 @@
     "HOST": "localhost",
     "PORT": 3000,
     "GRAPHQL": "/",
-    "GRAPHIQL": "/___graphql",
+    "GRAPHIQL": "___/graphql",
     "PAYLOAD": {
       "JSON": {
         "LIMIT": "50mb"

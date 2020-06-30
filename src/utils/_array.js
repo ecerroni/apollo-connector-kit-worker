@@ -1,17 +1,3 @@
-const bcrypt = require('bcryptjs')
-
-const encryptor = {
-  verify: async ({ digest }, stored) => bcrypt.compare(digest, stored),
-  encrypt: async ({ digest }) => bcrypt.hash(digest, 12)
-};
-
-const assignCascadeRoles = (ROLE, rankedRoles) => {
-  const additionalRoles = rankedRoles
-    .filter(rr => rr.rank > ROLE.RANK)
-    .map(rr => rr.value);
-  return [ROLE.VALUE, ...additionalRoles];
-};
-
 const sortItems = ({ items = [], ordering = 'ASC', field = null }) =>
   items.sort((a, b) => {
     if (!field) {
@@ -64,8 +50,6 @@ const sortItems = ({ items = [], ordering = 'ASC', field = null }) =>
     return 0; // do nothing;
   });
 
-module.exports = {
-  encryptor,
-  assignCascadeRoles,
-  sortItems
-}
+  module.exports = {
+    sortItems
+  }

@@ -1,14 +1,16 @@
 const server = require('./server')
 const playground = require('./playground')
 const setCors = require('./utils/setCors')
+const appSettings = require('./settings/app.json')
+const formatCloudflareResponse = require('./graphql/_format-response-cloudflare')
 
 const graphQLOptions = {
   // Set the path for the GraphQL server
-  baseEndpoint: '/',
+  baseEndpoint: appSettings.ENDPOINT.GRAPHQL,
 
   // Set the path for the GraphQL playground
   // This option can be removed to disable the playground route
-  playgroundEndpoint: '/___graphql',
+  playgroundEndpoint: appSettings.ENDPOINT.GRAPHIQL,
 
   // When a request's path isn't matched, forward it to the origin
   forwardUnmatchedRequestsToOrigin: false,
@@ -55,7 +57,19 @@ const handleRequest = async request => {
       if (graphQLOptions.cors) {
         setCors(response, graphQLOptions.cors)
       }
-      return response
+      const responseBody = response.bodyUsed ? response.body : await response.json()
+      const rawHeaders = new Map(request.headers)
+      const headers = {};
+
+      rawHeaders.forEach(function (value, key) {
+        headers[key] = value
+      })
+      const { body, headers: responseHeaders, status } = formatCloudflareResponse(responseBody, headers);
+      const formattedResponse = new Response(JSON.stringify(body), { status })
+      responseHeaders.forEach(header => {
+        formattedResponse.headers.set(header.name, header.value)
+      })
+      return formattedResponse
     } else if (
       graphQLOptions.playgroundEndpoint &&
       url.pathname === graphQLOptions.playgroundEndpoint

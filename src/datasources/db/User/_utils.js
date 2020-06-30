@@ -1,67 +1,27 @@
-const client = require('../../../dataconnectors')
-// const encryptor = require('../../../utils/encryptor')
-const { ERROR } = require('../../../environment/_errors')
+const users = require('../../../mocks/_users');
+const { ERROR } = require('../../../environment/_errors');
 
-const { fql, q, graphql } = client
-
-const queries = {
-  fetchUserByUsername: (username) => `{
-    fetchUserByUsername(username: ${username}) {
-      _id
-      password
-      role
-    }
-  }`,
-  fetchUserById: (id) => `{
-    fetchUserById(id: ${id}) {
-      _id
-      password
-      role
-    }
-  }`,
-  fetchRoleById: (id) => `{
-    fetchRoleById(id: ${id}) {
-      _id
-      value
-      rank
-      permissions
-    }
-  }`
-}
-
-
-const result = async (queryName, value) => {
-  const { [queryName]: { data = {} } = {} } = await graphql.request(queries[queryName](value))
-  return data
-}
-
-const UserHelper = {
+module.exports = {
   validate: async (username, password) => {
-    const validUser = await result('findUserByUsername', username);
+    const validUser =
+      users.filter(u => u.username === username).length > 0
+        ? users.filter(u => u.username === username)[0]
+        : undefined;
     if (validUser) {
-      // const validPassword = await encryptor.verify(
-      //   { digest: password },
-      //   validUser.password
-      // );
-      // if (!validPassword) {
-      //   throw new Error(ERROR.USER.WRONG_PASSWORD);
-      // }
-      let userRole = await result('findRoleById', validUser.role);
-      const userPermissions = userRole.permissions;
-      userRole = userRole.value;
-      return {
-        ...validUser,
-        role: {
-          value: userRole,
-          permissions: userPermissions
-        }
-      };
+      const validPassword = password === validUser.password
+      
+      if (!validPassword) {
+        throw new Error(ERROR.USER.WRONG_PASSWORD);
+      }
+      return validUser;
     }
     throw new Error(ERROR.USER.WRONG_CREDENTIALS);
   },
-
   getPassword: async ({ id, delta = false }) => {
-    const validUser = await result('findUserById', id);
+    const validUser =
+      users.filter(u => (u.id === id) || (u._id === id)).length > 0
+        ? users.filter(u => (u.id === id) || (u._id === id))[0]
+        : undefined;
     if (validUser) {
       const response = {
         password: validUser.password,
@@ -72,5 +32,3 @@ const UserHelper = {
     throw new Error(ERROR.USER.DOES_NOT_EXIST);
   }
 };
-
-module.exports = UserHelper

@@ -14,13 +14,7 @@ module.exports = [
     email: 'admin@test.it',
     password: '$2a$12$1e616OUCfSM7Wd3VOvbZve.4DtCrRDPrAZcKvIo3.lDUHm3kiXhna', // this is === 123456
     delta: 0,
-    role: {
-      value: SCOPES.ROLES.ADMIN.VALUE,
-      rank: SCOPES.ROLES.ADMIN.RANK,
-      permissions: Object.entries(ROLES_PERMISSIONS.ADMIN.PERMISSIONS).map(
-        entry => `${entry[0]}_${entry[1]}`
-      )
-    }
+    role: SCOPES.ROLES.ADMIN.VALUE
   },
   {
     _id: 2,
@@ -29,12 +23,6 @@ module.exports = [
     email: 'test@test.it',
     password: '$2a$12$1e616OUCfSM7Wd3VOvbZve.4DtCrRDPrAZcKvIo3.lDUHm3kiXhna',
     delta: 0,
-    role: {
-      value: SCOPES.ROLES.USER.VALUE,
-      rank: SCOPES.ROLES.USER.RANK,
-      permissions: Object.entries(ROLES_PERMISSIONS.USER.PERMISSIONS).map(
-        entry => `${entry[0]}_${entry[1]}`
-      )
-    }
+    role: SCOPES.ROLES.USER.VALUE
   }
 ];

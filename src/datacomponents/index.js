@@ -1,5 +1,6 @@
 const components = [
-  require('./Customer')
+  require('./Customer'),
+  require('./User'),
 ]
 
 const merge = components.reduce((obj, component) => ({

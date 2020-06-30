@@ -1,5 +1,6 @@
 const { UNAUTHORIZED, FORBIDDEN } = require('../environment/_authorization');
 const selectAuthStrategy = require('../auth/_select-auth-strategy')
+const JWT = require('../config/_jwt');
 const { setHeaders, setCookies, unsetCookies } = require('../auth/_handle-headers')
 const ROUTES_RESOLVERS = require('../settings/routes-resolvers.json');
 
@@ -10,12 +11,11 @@ const {
   } = {}
 } = ROUTES_RESOLVERS;
 
-module.exports = ({ response, query }) => {
-  const { context } = query;
-  const { res, req: request } = context;
-  const { data, errors } = response || {};
-
-  const { headers = {} } = request || {};
+module.exports = ({ errors, data}, requestHeaders) => {
+  const headers = []
+  const response = {
+    status: 200
+  }
   const operationName =
     data && Object.keys(data).length ? Object.keys(data)[0] : '';
 
@@ -33,18 +33,19 @@ module.exports = ({ response, query }) => {
   if (isLogout) {
     const [httpOnly] = selectAuthStrategy(headers);
     if (httpOnly) {
-      unsetCookies(res);
+      // TODO: RICO: implement this
     }
   }
   if (isLogin) {
     if (data[operationName]) {
-      const [httpOnly, localStorage] = selectAuthStrategy(headers);
+      const [httpOnly, localStorage] = selectAuthStrategy(requestHeaders);
       const { token, refreshToken } = JSON.parse(data[operationName]);
       if (httpOnly) {
-        setCookies(response, token, refreshToken);
+        // TODO: RICO: implement this
       }
       if (localStorage) {
-        setHeaders(http.headers, token, refreshToken);
+        headers.push({ name: JWT.HEADER.TOKEN.NAME, value: token });
+        headers.push({ name: JWT.HEADER.REFRESH_TOKEN.NAME, value: refreshToken });
       }
     }
   }
@@ -53,8 +54,14 @@ module.exports = ({ response, query }) => {
       response.status = 401;
     } else if (errorStatus['403']) {
       response.status = 403;
-      http.status = 401
     }
   }
-  return response;
+  return {
+    status: response.status,
+    body: {
+      errors,
+      data
+    },
+    headers
+  };
 };
