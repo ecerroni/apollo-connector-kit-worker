@@ -1,6 +1,6 @@
 const { UNAUTHORIZED, FORBIDDEN } = require('../environment/_authorization');
 const selectAuthStrategy = require('../auth/_select-auth-strategy')
-const { setHeaders, setCookies, unsetCookies } = require('../auth/_handle-headers')
+const JWT = require('../config/_jwt');
 const ROUTES_RESOLVERS = require('../settings/routes-resolvers.json');
 
 const {
@@ -12,10 +12,9 @@ const {
 
 module.exports = ({ response, query }) => {
   const { context } = query;
-  const { res, req: request } = context;
+  const { headers = {}, resHeaders } = context;
   const { data, errors } = response || {};
 
-  const { headers = {} } = request || {};
   const operationName =
     data && Object.keys(data).length ? Object.keys(data)[0] : '';
 
@@ -33,7 +32,7 @@ module.exports = ({ response, query }) => {
   if (isLogout) {
     const [httpOnly] = selectAuthStrategy(headers);
     if (httpOnly) {
-      unsetCookies(res);
+      // unsetCookies(res);
     }
   }
   if (isLogin) {
@@ -41,19 +40,22 @@ module.exports = ({ response, query }) => {
       const [httpOnly, localStorage] = selectAuthStrategy(headers);
       const { token, refreshToken } = JSON.parse(data[operationName]);
       if (httpOnly) {
-        setCookies(response, token, refreshToken);
+        // setCookies(response, token, refreshToken);
       }
       if (localStorage) {
-        setHeaders(http.headers, token, refreshToken);
+        console.log('LOCAL');
+        resHeaders.push({ [JWT.HEADER.TOKEN.NAME]: token })
+        resHeaders.push({ [JWT.HEADER.REFRESH_TOKEN.NAME]: refreshToken })
       }
     }
   }
   if (errorStatus && !isLogin && !isLogout) {
     if (errorStatus['401']) {
       response.status = 401;
+      resHeaders.push({ '_status': 401 })
     } else if (errorStatus['403']) {
       response.status = 403;
-      http.status = 401
+      resHeaders.push({ '_status': 403 })
     }
   }
   return response;

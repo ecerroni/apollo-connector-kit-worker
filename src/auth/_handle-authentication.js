@@ -3,7 +3,6 @@ const JWT = require('../config/_jwt');
 const AUTH = require('../config/_authentication');
 const selectAuthStrategy = require('./_select-auth-strategy');
 const { refreshTokens } = require('./_handle-tokens');
-const { setCookies, setHeaders } = require('./_handle-headers');
 
 const getCookie = (src, name) => {
   const value = `; ${src}`;
@@ -52,7 +51,8 @@ module.exports = async (headers) => {
         //   setCookies(res, newToken, newRefreshToken);
         // }
         if (localStorage) {
-          resHeaders = setHeaders(resHeaders, newToken, newRefreshToken);
+          resHeaders.push({ [JWT.HEADER.TOKEN.NAME]: newToken});
+          resHeaders.push({ [JWT.HEADER.REFRESH_TOKEN.NAME]: newRefreshToken});
         }
       }
       req.user = user;
@@ -60,6 +60,6 @@ module.exports = async (headers) => {
   }
   return {
     user: req.user,
-    resHeaders,
+    resHeaders
   }
 };

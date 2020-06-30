@@ -2,12 +2,12 @@ const {  mergeSchemas } = require('graphql-tools')
 const { applyMiddleware } = require('graphql-middleware')
 const { UNAUTHORIZED } = require('../environment/_authorization')
 const { isPrivateOperation } = require('../utils')
-const {
-  remoteSchema,
-  overridenResolvers,
-  customExtensionTypes,
-  customExtensionResolvers
-} = require('./remote_schema')
+// const {
+//   remoteSchema,
+//   overridenResolvers,
+//   customExtensionTypes,
+//   customExtensionResolvers
+// } = require('./remote_schema')
 const localSchema = require('./local_schema')
 
 const isAllowed = async (resolve, root, args, context, info) => {
@@ -24,14 +24,14 @@ const isAllowed = async (resolve, root, args, context, info) => {
 
 const finalSchema = mergeSchemas({
   schemas: [
-    remoteSchema,
+    // remoteSchema,
     localSchema,
-    customExtensionTypes
+    // customExtensionTypes
   ],
-  resolvers: {
-    ...overridenResolvers,
-    ...customExtensionResolvers,
-  }
+  // resolvers: {
+  //   ...overridenResolvers,
+  //   ...customExtensionResolvers,
+  // }
 })
 
 const schema = applyMiddleware(
