@@ -3,25 +3,30 @@ const fetch = require("node-fetch");
 const { __schema } = require('../remote-schema.json')
 const { buildClientSchema } = require('graphql/utilities');
 const { createHttpLink } = require('apollo-link-http');
-const { UNAUTHORIZED } = require('../environment/_authorization')
+const { UNAUTHORIZED, FORBIDDEN, NOT_ALLOWED } = require('../environment/_authorization')
 const operations = require('../all-operations.json')
 const { roles, permissions } = require('../directives/_constraints')
 
-const hasAccess = ({ user = null }, access) => {
-  console.log(user, access);
+const handleAccess = ({ user = null }, access) => {
   if(!user) return false
-  return access.includes('hasRole')
+  const authorized = access.includes('hasRole')
   ? !!user.roles.find(r => access.includes(r))
   : access.includes('isAllowed')
     ? !!user.permissions.find(p => access.includes(p))
     : false
+  if (!authorized) {
+    const isRole = access.includes('hasRole')
+    const isPermission = access.includes('isAllowed')
+    if(isRole) throw new Error(FORBIDDEN)
+    if(isPermission) throw new Error(NOT_ALLOWED)
+  }
 }
 
 const protectResolver = ({ shield = roles.is.user, forcePublic = false, operation = 'query', fieldName }) => async (root, args, context, info) => {
   if (!forcePublic) {
 
-    // validate against role/permisssions and if it fails
-    if (!hasAccess(context, shield)) throw new Error(UNAUTHORIZED) // this changes based on type. See attach-schema for exact behavior
+    // validate against role/permisssions and throw errors if it fails
+    handleAccess(context, shield)
   }
   return info.mergeInfo.delegateToSchema({
     schema: remoteSchema,

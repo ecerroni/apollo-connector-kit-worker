@@ -43,9 +43,6 @@ const createServer = (graphQLOptions, isDev) => {
       })
       return buildContext(headers)
     },
-    // extensions: [
-    //   () => new FwdHeadersExtension()
-    // ],
     plugins: [
       {
         requestDidStart() {
@@ -82,7 +79,6 @@ const createServer = (graphQLOptions, isDev) => {
     formatError: err => formatError(err, isDev),
     formatResponse: (response, query) => formatResponse({ response, query }),
     introspection: isDev,
-    // dataSources,
     dataSources: () => ({
       ...buildSource.db(),
       ...buildSource.api(),
@@ -92,24 +88,7 @@ const createServer = (graphQLOptions, isDev) => {
       : {}),
   })
 }
-// addEventListener('fetch', event => {
-//   return event.respondWith(handler(event.request))
-// })
 const handler = async (request, graphQLOptions, isDev) => {
-
-  // const introspectionResult = await introspectSchema(
-  //   new HttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
-  //     Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
-  //   }, fetch })
-  // );
-  // console.log(1);
-  // const remoteSchema = makeRemoteExecutableSchema({
-  //   schema: introspectionResult,
-  //   link: new HttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
-  //     Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
-  //   }, fetch })
-  // });
-  // console.log(2);
   const server = createServer(graphQLOptions, isDev)
   return graphqlCloudflare(() => server.createGraphQLServerOptions(request))(request)
 }

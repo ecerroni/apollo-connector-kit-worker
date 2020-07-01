@@ -11,7 +11,7 @@ const e401s = [
   UNAUTHORIZED
 ];
 
-const e403s = [FORBIDDEN];
+const e403s = [FORBIDDEN]; // add NOT_ALLOWED to the array if you think so
 module.exports = (err, isDev = false) => { // eslint-disable-line
   let error = err;
   const maskError =

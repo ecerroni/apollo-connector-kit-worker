@@ -16,7 +16,6 @@
     "apollo-server-cloudflare": "^2.15.1",
     "await-to-js": "^2.1.1",
     "graphql": "^14.2.1",
-    "graphql-extensions": "^0.10.7",
     "graphql-fields": "^2.0.3",
     "graphql-input-number": "^0.0.10",
     "graphql-input-string": "^0.0.16",
