@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const to = require('await-to-js');
 const AUTH = require('../config/_authentication');
 const JWT = require('../config/_jwt');
 const User = require('../datasources/db/User/_utils')
@@ -81,14 +82,17 @@ const refreshTokens = async refreshToken => {
   if (!userId) {
     return {};
   }
-  const validUser = await User.getPassword({ id: userId, delta: true });
+  const [err, validUser] = await to.default(User.getPassword({ id: userId, delta: true }));
 
+  if (err) {
+    return {};
+  }
+  
   const { password: userPassword = null, delta: userDelta = 0 } = validUser;
 
   if (!userPassword) {
     return {};
   }
-
   const refreshTokenSecret =
     userPassword + userDelta + AUTH.SECRET_REFRESH_TOKEN;
   const { ok, user } = await verifyToken(

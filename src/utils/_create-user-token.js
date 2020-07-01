@@ -1,5 +1,5 @@
 const { createTokens } = require('../auth/_handle-tokens');
-const AUTH = require('../config/_app');
+const AUTH = require('../config/_authentication');
 const FULL_ROLES = require('../config/_roles-permissions');
 const { assignCascadeRoles } = require('./_roles');
 const { sortItems } = require( './_array');
