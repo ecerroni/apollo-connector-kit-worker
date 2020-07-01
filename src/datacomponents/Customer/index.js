@@ -1,18 +1,18 @@
-const graphqlFields = require('graphql-fields');
+// const graphqlFields = require('graphql-fields');
 const { roles } = require('../../directives/_constraints');
 
-const transformFields = o =>
-  Object.entries(o).reduce(
-    (str, entry) =>
-      `${str} ${entry[0]}${
-      entry[1] &&
-        typeof entry[1] === "object" &&
-        Object.keys(entry[1]).length > 0
-        ? ` {${transformFields(entry[1])} }`
-        : ""
-      }`,
-    ""
-  );
+// const transformFields = o =>
+//   Object.entries(o).reduce(
+//     (str, entry) =>
+//       `${str} ${entry[0]}${
+//       entry[1] &&
+//         typeof entry[1] === "object" &&
+//         Object.keys(entry[1]).length > 0
+//         ? ` {${transformFields(entry[1])} }`
+//         : ""
+//       }`,
+//     ""
+// );
 
 const Customer = {
   types: `

@@ -31,7 +31,7 @@ const { UNAUTHORIZED, FORBIDDEN } = require('./environment/_authorization');
 // }
 
 
-const createServer = (graphQLOptions, isDev) => {
+const createServer = (event, graphQLOptions, isDev) => {
   return new ApolloServer({
     schema,
     context: ({request }) => {
@@ -49,7 +49,7 @@ const createServer = (graphQLOptions, isDev) => {
           return {
             didEncounterErrors(o) {
               const { response, errors } = o
-              console.log(errors[0].message, FORBIDDEN, 17);
+              console.log('[ERRORS]', errors);
               if (response && response.http && errors.find(err => err.message.includes(FORBIDDEN))) {
                 response.http.status = 403;
               }
@@ -76,7 +76,7 @@ const createServer = (graphQLOptions, isDev) => {
       },
       
     ],
-    formatError: err => formatError(err, isDev),
+    formatError: err => formatError(err, event, isDev),
     formatResponse: (response, query) => formatResponse({ response, query }),
     introspection: isDev,
     dataSources: () => ({
@@ -88,8 +88,9 @@ const createServer = (graphQLOptions, isDev) => {
       : {}),
   })
 }
-const handler = async (request, graphQLOptions, isDev) => {
-  const server = createServer(graphQLOptions, isDev)
+const handler = async (event, graphQLOptions, isDev) => {
+  const { request } = event
+  const server = createServer(event, graphQLOptions, isDev)
   return graphqlCloudflare(() => server.createGraphQLServerOptions(request))(request)
 }
 

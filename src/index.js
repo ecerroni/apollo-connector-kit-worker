@@ -2,6 +2,7 @@ const server = require('./server')
 const playground = require('./playground')
 const setCors = require('./utils/setCors')
 const appSettings = require('./settings/app.json')
+const logger = require('./logger')
 
 const graphQLOptions = {
   // Set the path for the GraphQL server
@@ -35,7 +36,8 @@ const graphQLOptions = {
   kvCache: false,
 }
 
-const handleRequest = async request => {
+const handleRequest = async event => {
+  const { request } = event
   const headers = new Map(request.headers)
   const host = headers.get('host')
   console.log('[INFO] Host is:', host)
@@ -52,7 +54,7 @@ const handleRequest = async request => {
       const response =
         request.method === 'OPTIONS'
           ? new Response('', { status: 204 })
-          : await server(request, graphQLOptions, __DEV)
+          : await server(event, graphQLOptions, __DEV)
       if (graphQLOptions.cors) {
         setCors(response, graphQLOptions.cors)
       }
@@ -85,11 +87,11 @@ const handleRequest = async request => {
   } catch (err) {
     if (__DEV) {
       console.log(err);
-    }
+    } else event.waitUntil(logger(request.headers.get('host'), 'worker_try_catch_error', err))
     return new Response(graphQLOptions.debug ? err : 'Something went wrong', { status: 500 })
   }
 }
 
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
+  event.respondWith(handleRequest(event))
 })
