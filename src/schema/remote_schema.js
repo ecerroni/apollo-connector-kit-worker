@@ -1,5 +1,4 @@
 const {  makeRemoteExecutableSchema } = require('graphql-tools')
-const fetch = require("node-fetch");
 const { __schema } = require('../remote-schema.json')
 const { buildClientSchema } = require('graphql/utilities');
 const { createHttpLink } = require('apollo-link-http');
@@ -51,7 +50,7 @@ const remoteSchema = makeRemoteExecutableSchema({
   schema: remote,
   link: createHttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
       Authorization: `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq`,
-    }, fetch: fetch.default })
+    }, fetch })
 });
 if (remoteSchema) {
   console.log('[INFO] Remote schema ready');
