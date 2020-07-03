@@ -1,6 +1,7 @@
 const APP = require('../settings/app.json');
 const JWT_SETTINGS = require('../settings/jwt.json');
 const COOKIE_SETTINGS = require('../settings/cookie.json');
+const { refreshTokens } = require('../auth/_handle-tokens');
 
 const {
   TOKEN_EXP = 6 * 60, // 6 minutes (seconds)
@@ -22,7 +23,7 @@ const TOKEN_NAME = `${PREFIX}${NAMESPACE}${TOKEN_SUFFIX}`;
 const REFRESH_TOKEN_NAME = `${PREFIX}${NAMESPACE}${REFRESH_TOKEN_SUFFIX}`;
 
 // YOU MAY NOT CHANGE THESE SETTINGS BELOW
-module.exports = {
+const values = {
   HEADER: {
     TOKEN: {
       NAME: TOKEN_NAME,
@@ -44,9 +45,12 @@ module.exports = {
     },
     TYPE: {
       maxAge: COOKIE_EXP,
-      httpOnly: true
+      httpOnly: true,
       // Best cookie atm `Set-Cookie: __Host-sess=123; path=/; Secure; HttpOnly; SameSite`
       // ref: https://scotthelme.co.uk/tough-cookies/
+      buildCookieString: (token) => `${TOKEN_NAME}=${token}; Max-Age=${COOKIE_EXP}; httpOnly`
     }
   }
 };
+
+module.exports = values

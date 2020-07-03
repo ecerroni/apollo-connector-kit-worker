@@ -26,10 +26,10 @@ module.exports = async (headers) => {
   let refreshToken;
 
   const [httpOnly, localStorage] = selectAuthStrategy(req.headers);
-  // if (httpOnly) {
-  //   token = getCookie(req.headers.cookie, JWT.COOKIE.TOKEN.NAME);
-  //   refreshToken = getCookie(req.headers.cookie, JWT.COOKIE.REFRESH_TOKEN.NAME);
-  // }
+  if (httpOnly) {
+    token = getCookie(req.headers.cookie, JWT.COOKIE.TOKEN.NAME);
+    refreshToken = getCookie(req.headers.cookie, JWT.COOKIE.REFRESH_TOKEN.NAME);
+  }
 
   if (localStorage) {
     token = req.headers[JWT.HEADER.TOKEN.NAME];
@@ -47,9 +47,10 @@ module.exports = async (headers) => {
         user
       } = await refreshTokens(refreshToken);
       if (newToken && newRefreshToken) {
-        // if (httpOnly) {
-        //   setCookies(res, newToken, newRefreshToken);
-        // }
+        if (httpOnly) {
+          resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(newToken) });
+          resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(newRefreshToken) });
+        }
         if (localStorage) {
           resHeaders.push({ [JWT.HEADER.TOKEN.NAME]: newToken});
           resHeaders.push({ [JWT.HEADER.REFRESH_TOKEN.NAME]: newRefreshToken});

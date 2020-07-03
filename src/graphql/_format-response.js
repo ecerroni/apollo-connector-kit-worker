@@ -40,7 +40,8 @@ module.exports = ({ response, query }) => {
       const [httpOnly, localStorage] = selectAuthStrategy(headers);
       const { token, refreshToken } = JSON.parse(data[operationName]);
       if (httpOnly) {
-        // setCookies(response, token, refreshToken);
+        resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(token) });
+        resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(refreshToken) });
       }
       if (localStorage) {
         console.log('LOCAL');
