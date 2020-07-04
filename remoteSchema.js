@@ -4,7 +4,7 @@ const fs = require("fs");
 
 fetch("https://graphql.fauna.com/graphql", {
   method: "POST",
-  headers: { "Content-Type": "application/json", "Authorization": `Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq` },
+  headers: { "Content-Type": "application/json", "Authorization": `Bearer ${FAUNA_SECRET}` },
   body: JSON.stringify({ query: introspectionQuery })
 })
   .then(res => res.json())
@@ -15,4 +15,4 @@ fetch("https://graphql.fauna.com/graphql", {
   );
 
 // OR FROM THE CLI
-// apollo schema:download --header "Authorization: Bearer fnADflatjdACAPRlHz4zHFaRekRrcGVY6_LwzhBq" --endpoint=https://graphql.fauna.com/graphql .src/remote-schema.json
+// apollo schema:download --header "Authorization: Bearer FAUNA_SECRET" --endpoint=https://graphql.fauna.com/graphql .src/remote-schema.json

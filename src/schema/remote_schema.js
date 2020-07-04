@@ -49,7 +49,7 @@ const remote = buildClientSchema({ __schema })
 const remoteSchema = makeRemoteExecutableSchema({
   schema: remote,
   link: createHttpLink({ uri: 'https://graphql.fauna.com/graphql', headers: {
-      Authorization: `Bearer ${process.env.FAUNA_SECRET}`,
+      Authorization: `Bearer ${process.env.FAUNA_SECRET || FAUNA_SECRET}`,
     }, fetch })
 });
 if (remoteSchema) {

@@ -29,8 +29,6 @@ module.exports = async (headers) => {
   if (httpOnly) {
     token = getCookie(req.headers.cookie, JWT.COOKIE.TOKEN.NAME);
     refreshToken = getCookie(req.headers.cookie, JWT.COOKIE.REFRESH_TOKEN.NAME);
-    console.log('TOKEN', token);
-    console.log('REFRESH_TOKEN', refreshToken);
   }
 
   if (localStorage) {

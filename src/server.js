@@ -49,7 +49,7 @@ const createServer = (event, graphQLOptions, isDev) => {
           return {
             didEncounterErrors(o) {
               const { response, errors } = o
-              console.log('[ERRORS]', errors);
+              // console.log('[ERRORS]', errors);
               if (response && response.http && errors.find(err => err.message.includes(FORBIDDEN))) {
                 response.http.status = 403;
               }
