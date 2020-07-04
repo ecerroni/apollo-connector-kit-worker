@@ -19,7 +19,7 @@ dist
 .env
 worker
 wrangler.toml
-webpack.config.dev*
+webpack.config.dev.js
 
 secrets
 
