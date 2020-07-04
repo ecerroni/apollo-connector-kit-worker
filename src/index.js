@@ -66,10 +66,16 @@ const handleRequest = async event => {
       const headers = {};
 
       rawHeaders.forEach(function (value, key) {
-        headers[key] = value
-      })
-      Object.entries(headers).forEach(([key, value]) => {
-        if(key[0] != '_') formattedResponse.headers.set(key, value) // do not send headers with name that starts with _
+        headers[key.toLowerCase()] = value
+      });
+
+      // I want this: https://caolan.uk/articles/multiple-set-cookie-headers-in-node-js/
+      // Worker (apollo-server-cloudlfare) does not seem able to do it: https://community.cloudflare.com/t/dont-fold-set-cookie-headers-with-headers-append/165934
+      // This is the workaround
+      const cookies = Object.entries(headers).filter(([k]) => k.includes('_set-cookie')).reduce((a, [key, value]) => [...a, ['Set-Cookie', value]], []);
+
+      [...Object.entries(headers), ...cookies].forEach(([key, value]) => {
+        if(key[0] != '_') formattedResponse.headers.append(key, value) // do not send headers with name that starts with _
       })
 
       // send response

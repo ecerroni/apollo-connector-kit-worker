@@ -40,11 +40,13 @@ module.exports = ({ response, query }) => {
       const [httpOnly, localStorage] = selectAuthStrategy(headers);
       const { token, refreshToken } = JSON.parse(data[operationName]);
       if (httpOnly) {
-        resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(token) });
-        resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(refreshToken) });
+        // I want this: https://caolan.uk/articles/multiple-set-cookie-headers-in-node-js/
+        // Worker (apollo-server-cloudlfare) does not seem able to do it: https://community.cloudflare.com/t/dont-fold-set-cookie-headers-with-headers-append/165934
+        // This is the workaround
+        resHeaders.push({ '_Set-Cookie1': JWT.COOKIE.TYPE.buildCookieString(token) });
+        resHeaders.push({ '_Set-Cookie2': JWT.COOKIE.TYPE.buildCookieString(refreshToken, true) });
       }
       if (localStorage) {
-        console.log('LOCAL');
         resHeaders.push({ [JWT.HEADER.TOKEN.NAME]: token })
         resHeaders.push({ [JWT.HEADER.REFRESH_TOKEN.NAME]: refreshToken })
       }

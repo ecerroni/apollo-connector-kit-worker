@@ -29,6 +29,8 @@ module.exports = async (headers) => {
   if (httpOnly) {
     token = getCookie(req.headers.cookie, JWT.COOKIE.TOKEN.NAME);
     refreshToken = getCookie(req.headers.cookie, JWT.COOKIE.REFRESH_TOKEN.NAME);
+    console.log('TOKEN', token);
+    console.log('REFRESH_TOKEN', refreshToken);
   }
 
   if (localStorage) {
@@ -48,8 +50,11 @@ module.exports = async (headers) => {
       } = await refreshTokens(refreshToken);
       if (newToken && newRefreshToken) {
         if (httpOnly) {
-          resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(newToken) });
-          resHeaders.push({ 'Set-Cookie': JWT.COOKIE.TYPE.buildCookieString(newRefreshToken) });
+          // I want this: https://caolan.uk/articles/multiple-set-cookie-headers-in-node-js/
+          // Worker (apollo-server-cloudlfare) does not seem able to do it: https://community.cloudflare.com/t/dont-fold-set-cookie-headers-with-headers-append/165934
+          // This is the workaround
+          resHeaders.push({ '_Set-Cookie1': JWT.COOKIE.TYPE.buildCookieString(newToken) });
+          resHeaders.push({ '_Set-Cookie2': JWT.COOKIE.TYPE.buildCookieString(newRefreshToken, true) });
         }
         if (localStorage) {
           resHeaders.push({ [JWT.HEADER.TOKEN.NAME]: newToken});

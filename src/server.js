@@ -68,7 +68,6 @@ const createServer = (event, graphQLOptions, isDev) => {
                   if (o.response && o.response.http) o.response.http.headers.append(entry[0], entry[1]);
                 })
               });
-              
               return o;
             }              
           }

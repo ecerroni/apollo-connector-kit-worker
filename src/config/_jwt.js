@@ -48,7 +48,8 @@ const values = {
       httpOnly: true,
       // Best cookie atm `Set-Cookie: __Host-sess=123; path=/; Secure; HttpOnly; SameSite`
       // ref: https://scotthelme.co.uk/tough-cookies/
-      buildCookieString: (token) => `${TOKEN_NAME}=${token}; Max-Age=${COOKIE_EXP}; httpOnly`
+      // buildCookieString: (token, refresh = false) => `${refresh ? REFRESH_TOKEN_NAME : TOKEN_NAME}=${token}; Max-Age=${COOKIE_EXP}; HttpOnly`      
+      buildCookieString: (token, refresh = false) => `${refresh ? REFRESH_TOKEN_NAME : TOKEN_NAME}=${token}; Max-Age=${COOKIE_EXP}; HttpOnly`      
     }
   }
 };
