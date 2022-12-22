@@ -20,7 +20,7 @@
     "graphql-input-string": "^0.0.16",
     "graphql-middleware": "^4.0.2",
     "graphql-type-json": "^0.3.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "merge-graphql-schemas": "^1.7.3",
     "random-seed-generator": "^0.0.7"
   },
